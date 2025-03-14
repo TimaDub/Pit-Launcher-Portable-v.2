@@ -1,22 +1,16 @@
 <!DOCTYPE RCC><RCC version="1.0">
-<qresource prefix="/resources">
+<qresource prefix="/assets">
 
     <file>fonts/main_font.ttf</file>
     <file>fonts/sub_font.ttf</file>
 
     <file>images/logo.png</file>
     <file>images/icon.png</file>
-    <file>images/icon.icon</file>
+    <file>images/icon.ico</file>
 
     <file>assets/data/adjectives.txt</file>
     <file>assets/data/nouns.txt</file>
 
-    <file>assets/styles/blue.json</file>
-    <file>assets/styles/dark.json</file>
-    <file>assets/styles/green.json</file>
-    <file>assets/styles/light.json</file>
-    <file>assets/styles/neon-blue.json</file>
-    <file>assets/styles/neon-purple.json</file>
-    <file>assets/styles/red.json</file>
+    <file alias="styles.json">assets/styles.json</file>
 </qresource>
 </RCC>

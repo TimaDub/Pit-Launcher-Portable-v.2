@@ -3,12 +3,13 @@
 # See LICENSE file for details.
 
 import sys
-from functools import lru_cache
-from os import path, mkdir, scandir
+from os import path, mkdir
 from datetime import datetime
 from msgspec import json, Struct, DecodeError
-from typing import Dict, List
+from typing import List
 from minecraft_launcher_lib.utils import get_minecraft_directory
+import resources
+from PyQt6.QtCore import QFile, QIODevice
 
 
 def resource_path(relative_path):
@@ -39,9 +40,8 @@ class Manager:
         logs_path: str = ".pit_logs",
         app_path: str = ".pit",
         properties_path: str = "launcher_properties.json",
-        images_path: str = ":/assets/images/",
-        fonts_path: str = ":/assets/fonts/",
-        base_style_path: str = ":/assets/styles.json",
+        assets_path: str = ":/assets/",
+        base_style_name: str = "styles.json",
         logo_path: str = "logos/logo.png",
         main_icon_path: str = "logos/icon.png",
         main_font_path: str = "main_font.ttf",
@@ -51,17 +51,16 @@ class Manager:
         self.launcher_properties_path = path.join(
             self.minecraft_directory, properties_path
         )
+        self.assets_folder = assets_path
         self.logs_path = path.join(self.minecraft_directory, logs_path)
         self.workspace_path = path.join(self.minecraft_directory, app_path)
-        self.images_path: str = images_path
-        self.fonts_path: str = fonts_path
-        self.base_style_path: str = base_style_path
+        self.base_style_path: str = path.join(self.assets_folder, base_style_name)
         self.styles_path = path.join(self.workspace_path, "styles")
         #
-        self.logo_path = path.join(self.images_path, logo_path)
-        self.main_icon_path = path.join(self.images_path, main_icon_path)
-        self.main_font_path = path.join(self.fonts_path, main_font_path)
-        self.sub_font_path = path.join(self.fonts_path, sub_font_path)
+        self.logo_path = path.join(self.assets_folder, logo_path)
+        self.main_icon_path = path.join(self.assets_folder, main_icon_path)
+        self.main_font_path = path.join(self.assets_folder, main_font_path)
+        self.sub_font_path = path.join(self.assets_folder, sub_font_path)
         #
         self.time_start = datetime.now()
         #
@@ -80,8 +79,14 @@ class Manager:
             print("Json exists")
 
     def load(self):
-        with open(self.base_style_path, "br") as json_save:
-            return json.decode(json_save.read(), type=Saver)
+        file = QFile(self.base_style_path)
+        if not file.open(QIODevice.OpenModeFlag.ReadOnly):
+            print("Ошибка: не удалось открыть файл")
+            return None
+
+        data = file.readAll().data().decode("utf-8")
+        file.close()
+        return json.decode(data, type=Saver)
 
     def load_properties(self, arg):
         try:
@@ -139,4 +144,4 @@ class Manager:
 
 if __name__ == "__main__":
     manager1 = Manager()
-    print([(style.name, style.background_color) for style in manager1.load().styles])
+    print([style.name for style in manager1.load().styles])

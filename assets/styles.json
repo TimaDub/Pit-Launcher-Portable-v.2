@@ -1,0 +1,74 @@
+{
+    "styles" : [
+            {
+                "name": "blue",
+                "background_color" : "rgb(10, 10, 10)",
+                "text_color": "rgb(52, 0, 222)",
+                "button_color": "rgb(131, 30, 232)",
+                "progress_bar_color": "qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #3400de, stop:1 #831ee8)",
+                "progress_bar_text_color": "rgb(255, 255, 255)",
+                "selected_tab_color": "rgb(52, 0, 222)",
+                "selected_tab_background_color": "rgb(10, 10, 10)"
+            },
+            {
+                "name": "dark",
+                "background_color": "rgb(10, 10, 10)",
+                "text_color": "rgb(255, 255, 255)",
+                "button_color": "rgb(30, 30, 40)",
+                "progress_bar_color": "qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #1e1e28, stop:1 #ffffff)",
+                "progress_bar_text_color": "rgb(60, 60, 80)",
+                "selected_tab_color": "rgb(10, 10, 10)",
+                "selected_tab_background_color": "rgb(255, 255, 255)"
+            },
+            {
+                "name": "green",
+                "background_color": "rgb(10, 10, 10)",
+                "text_color": "rgb(20, 255, 20)",
+                "button_color": "rgb(30, 232, 30)",
+                "progress_bar_color": "qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 rgb(30, 232, 30), stop:1 rgb(10, 180, 10))",
+                "progress_bar_text_color": "rgb(255, 255, 255)",
+                "selected_tab_color": "rgb(30, 10, 10)",
+                "selected_tab_background_color": "rgb(30, 232, 30)"
+            },
+            {
+                "name": "light",
+                "background_color": "rgb(235, 235, 235)",
+                "text_color": "rgb(0, 0, 0)",
+                "button_color": "rgb(30, 30, 40)",
+                "progress_bar_color": "qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #323232, stop:1 #969696)",
+                "progress_bar_text_color": "rgb(185, 185, 185)",
+                "selected_tab_color": "rgb(225, 225, 225)",
+                "selected_tab_background_color": "rgb(30, 30, 30)"
+            },
+            {
+                "name": "neon-blue",
+                "background_color": "rgb(10, 10, 10)",
+                "text_color": "rgb(52, 0, 222)",
+                "button_color": "qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #831ee8, stop:1 #e81e1e)",
+                "progress_bar_color": "qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #7661A2, stop:1 #e81e1e)",
+                "progress_bar_text_color": "rgb(255, 255, 255)",
+                "selected_tab_color": "rgb(131, 30, 232)",
+                "selected_tab_background_color": "rgb(10, 10, 10)"
+            },
+            {
+                "name": "neon-purple",
+                "background_color": "rgb(10, 10, 10)",
+                "text_color": "rgb(131, 30, 232)",
+                "button_color": "qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #831ee8, stop:1 #e81e1e)",
+                "progress_bar_color": "qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #831ee8, stop:1 #e81e1e)",
+                "progress_bar_text_color": "rgb(255, 255, 255)",
+                "selected_tab_color": "rgb(131, 30, 232)",
+                "selected_tab_background_color": "rgb(10, 10, 10)"
+            },
+            {
+                "name": "red",
+                "background_color": "rgb(10, 10, 10)",
+                "text_color": "rgb(255, 20, 20)",
+                "button_color": "rgb(232, 30, 30)",
+                "progress_bar_color": "qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 rgb(232, 30, 30), stop:1 rgb(180, 20, 20))",
+                "progress_bar_text_color": "rgb(255, 255, 255)",
+                "selected_tab_color": "rgb(30, 10, 10)",
+                "selected_tab_background_color": "rgb(232, 30, 30)"
+            }            
+        ]
+  }

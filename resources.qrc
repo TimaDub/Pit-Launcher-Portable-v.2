@@ -1,16 +1,12 @@
-<!DOCTYPE RCC><RCC version="1.0">
-<qresource prefix="/assets">
-
-    <file>fonts/main_font.ttf</file>
-    <file>fonts/sub_font.ttf</file>
-
-    <file>images/logo.png</file>
-    <file>images/icon.png</file>
-    <file>images/icon.ico</file>
-
-    <file>assets/data/adjectives.txt</file>
-    <file>assets/data/nouns.txt</file>
-
+<RCC>
+  <qresource prefix="/assets">
+    <file alias="fonts/main_font.ttf">fonts/main_font.ttf</file>
+    <file alias="fonts/Minecrafteria-Regular.ttf">fonts/sub_font.ttf</file>
+    <file alias="images/logo.png">images/logo.png</file>
+    <file alias="images/icon.png">images/icon.png</file>
+    <file alias="images/icon.ico">images/icon.ico</file>
+    <file alias="data/adjectives.txt">assets/data/adjectives.txt</file>
+    <file alias="data/nouns.txt">assets/data/nouns.txt</file>
     <file alias="styles.json">assets/styles.json</file>
-</qresource>
+  </qresource>
 </RCC>

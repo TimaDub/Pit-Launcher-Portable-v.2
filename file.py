@@ -1,23 +1,18 @@
-from os import getenv
+from PyQt6.uic import loadUi
+import resources
+from sys import argv
 from sys import argv, exit as exit_
-from time import perf_counter
-from PyQt6.QtCore import QThread, pyqtSignal, QSize, Qt, QUrl
-from PyQt6.QtGui import QIcon, QFontDatabase, QFont, QPixmap, QDesktopServices
+from PyQt6.QtCore import QThread, pyqtSignal
+from PyQt6.QtGui import QFontDatabase, QFont
 from PyQt6.QtWidgets import (
     QMainWindow,
     QLabel,
-    QWidget,
     QLineEdit,
-    QTabWidget,
-    QVBoxLayout,
-    QComboBox,
-    QProgressBar,
-    QPushButton,
     QApplication,
     QSpacerItem,
     QSizePolicy,
-    QMessageBox,
 )
+from PyQt6.uic import loadUi
 from minecraft_launcher_lib.quilt import (
     get_stable_minecraft_versions as get_stable_minecraft_versions_quilt,
 )
@@ -35,6 +30,7 @@ from minecraft_launcher_lib.utils import (
     get_version_list,
     get_installed_versions,
     get_java_executable,
+    get_latest_version,
 )
 import fabric_install
 import quilt_install
@@ -100,21 +96,6 @@ class LaunchThread(QThread):
         )
 
     def run(self) -> None:
-        java_not_found: bool
-        java_not_found = get_java_executable().lower() in ["javaw", "java"]
-        self.manager.log(
-            [
-                (
-                    "Java not installed or not found ! Install Java version >= 17.0"
-                    if java_not_found
-                    else "Found Java !"
-                )
-            ]
-        )
-        self.manager.mod(self.version_id, self.loader)
-
-        if java_not_found:
-            self.manager.log(["Java not Found !!!"])
         #
         self.manager.log(["Username: " + self.username])
         #
@@ -128,14 +109,14 @@ class LaunchThread(QThread):
             self.manager.save(loaders_dict=self.loader_dict)
         except:
             self.manager.save(
-                # loaders_dict={
-                #     "forge": "1.21.1",
-                #     "vanila": get_latest_version()["release"],
-                #     "fabric": get_stable_minecraft_versions()[0],
-                #     "quilt": get_stable_minecraft_versions_quilt()[0],
-                # }
+                loaders_dict={
+                    "forge": "1.21.1",
+                    "vanila": get_latest_version()["release"],
+                    "fabric": get_stable_minecraft_versions()[0],
+                    "quilt": get_stable_minecraft_versions_quilt()[0],
+                }
             )
-            self.loader_dict: dict = self.manager.load("loaders_dict") or {}
+            self.loader_dict: dict = self.manager.load("loaders_dict")
             self.loader_dict.update({self.loader: self.version_id})
             self.manager.save(loaders_dict=self.loader_dict)
         #
@@ -162,6 +143,20 @@ class LaunchThread(QThread):
                 f"Installing and running: {self.loader} version: {self.version_id} {self.loader_version}"
             ]
         )
+        java_not_found: bool
+        java_not_found = get_java_executable().lower() in ["javaw", "java"]
+        self.manager.log(
+            [
+                (
+                    "Java not installed or not found ! Install Java version >= 17.0"
+                    if java_not_found
+                    else "Found Java !"
+                )
+            ]
+        )
+        if java_not_found:
+            self.manager.log(["Java not Found !!!"])
+            return
         #
         match self.loader:
             case "vanila":
@@ -255,7 +250,6 @@ class LaunchThread(QThread):
                     )
                 )
 
-        self.manager.mod_rollback()
         self.state_update_signal.emit(False)
 
 
@@ -263,18 +257,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.manager = LaunchThread.manager
-        self.setFixedSize(self.manager.window_size[0], self.manager.window_size[1])
-        self.central_widget = QWidget(self)
-        #
-        self.logo = QLabel(self.central_widget)
-        self.logo.setMaximumSize(QSize(256, 92))
-        self.logo.setText("Pit Launcher")
-        self.setWindowTitle("Pit Launcher")
-        self.setWindowIcon(QIcon(self.manager.main_icon_path))
-        if getenv("WAYLAND_DISPLAY"):
-            app.setDesktopFileName("pit_launcher")
-        self.logo.setPixmap(QPixmap(self.manager.logo_path))
-        self.logo.setScaledContents(True)
+        loadUi("design.ui", self)
         #
         self.main_font_id = QFontDatabase.addApplicationFont(
             self.manager.main_font_path
@@ -292,19 +275,7 @@ class MainWindow(QMainWindow):
         self.sub_font = QFont(self.sub_font_family)
         self.sub_font.setPointSize(self.manager.sub_font_size)
         #
-        self.title_spacer = QSpacerItem(
-            20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
-        )
-        self.play_spacer = QSpacerItem(
-            0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
-        )
-        #
-        self.username = QLineEdit(self.central_widget)
-        #
         self.username.setPlaceholderText("Username")
-
-        #
-        self.logo.mousePressEvent = self.open_folder
         #
         try:
             username = self.manager.load("username")
@@ -322,53 +293,33 @@ class MainWindow(QMainWindow):
         self.username.textChanged.connect(save_username)
 
         #
-        self.tab_widget = QTabWidget()
         self.current_loader = {0: "vanila", 1: "forge", 2: "fabric", 3: "quilt"}
         self.current_tab = {"vanila": 0, "forge": 1, "fabric": 2, "quilt": 3}
         #
-        self.vanila_tab = QWidget()
-        self.vanila_layout = QVBoxLayout(self.vanila_tab)
 
-        self.vanilla_combobox = QComboBox()
         self.vanila_list = [
             version["id"]
             for version in get_version_list()
             if version["type"] == "release"
         ]
-        self.vanila_layout.addWidget(self.vanilla_combobox)
         self.vanilla_combobox.setFont(self.main_font)
         self.vanilla_combobox.addItems(self.vanila_list)
         self.vanila_tab.setMinimumWidth(200)
         #
-        self.forge_tab = QWidget()
-        self.forge_layout = QVBoxLayout(self.forge_tab)
-
-        self.forge_combobox = QComboBox()
         self.forge_list = [
             version
             for version in self.vanila_list
             if find_forge_version(version) is not None
         ]
         self.forge_combobox.addItems(self.forge_list)
-        self.forge_layout.addWidget(self.forge_combobox)
         self.forge_combobox.setFont(self.main_font)
         #
-        self.fabric_tab = QWidget()
-        self.fabric_layout = QVBoxLayout(self.fabric_tab)
 
-        self.fabric_combobox = QComboBox()
         self.fabric_list = get_stable_minecraft_versions()
-        self.fabric_combobox.addItems(self.fabric_list)
-        self.fabric_layout.addWidget(self.fabric_combobox)
         self.fabric_combobox.setFont(self.main_font)
         #
-        self.quilt_tab = QWidget()
-        self.quilt_layout = QVBoxLayout(self.quilt_tab)
-
-        self.quilt_combobox = QComboBox()
         self.quilt_list = get_stable_minecraft_versions_quilt()
         self.quilt_combobox.addItems(self.quilt_list)
-        self.quilt_layout.addWidget(self.quilt_combobox)
         self.quilt_combobox.setFont(self.main_font)
         #
         try:
@@ -391,36 +342,13 @@ class MainWindow(QMainWindow):
         except:
             self.manager.log(["Error ! {", "Failed adding versions !", "} Skipping !"])
         #
-        self.settings_tab = QWidget()
-        self.theme_combobox = QComboBox()
-        #
-        self.tab_widget.addTab(self.vanila_tab, "Vanilla")
-        self.tab_widget.addTab(self.forge_tab, "Forge")
-        self.tab_widget.addTab(self.fabric_tab, "Fabric")
-        self.tab_widget.addTab(self.quilt_tab, "Quilt")
-        #
-        self.settings_layout = QVBoxLayout(self.settings_tab)
-        self.settings_layout.addWidget(self.theme_combobox)
-        #
         self.theme_combobox.addItems(
             [key.name.capitalize() for key in self.manager.load_styles()]
         )
         self.theme_combobox.currentIndexChanged.connect(self.apply_current_style)
         self.theme_combobox.setFont(self.main_font)
         #
-        gap_tab = QWidget()
-        gap_tab2 = QWidget()
-        self.tab_widget.addTab(gap_tab, " | ")
-
-        self.tab_widget.tabBar().setTabEnabled(self.tab_widget.indexOf(gap_tab), False)
-        self.tab_widget.tabBar().setUsesScrollButtons(False)
-        self.tab_widget.tabBar().setStyleSheet(
-            """QTabBar::tab:disabled {background: transparent;border: none;}"""
-        )
         #
-        self.installed_tab = QWidget()
-        #
-        self.installed_combobox = QComboBox()
         self.installed_versions_list = [
             version["id"]
             for version in get_installed_versions(
@@ -429,20 +357,13 @@ class MainWindow(QMainWindow):
         ]
         self.installed_combobox.addItems(self.installed_versions_list)
         #
-        self.installed_search = QLineEdit()
         self.installed_search.setPlaceholderText("Search for version")
         self.installed_search.setFont(self.main_font)
         self.installed_search.textChanged.connect(self.filter_items)
 
-        self.installed_layout = QVBoxLayout(self.installed_tab)
         self.installed_layout.addWidget(self.installed_search)
-        self.installed_layout.addWidget(self.installed_combobox)
         self.installed_combobox.setFont(self.main_font)
         #
-        self.tab_widget.addTab(self.installed_tab, "Installed")
-        self.tab_widget.addTab(gap_tab2, " | ")
-        self.tab_widget.tabBar().setTabEnabled(self.tab_widget.indexOf(gap_tab2), False)
-        self.tab_widget.addTab(self.settings_tab, "Theme")
         #
         self.tab_widget.setFont(self.main_font)
         try:
@@ -455,19 +376,16 @@ class MainWindow(QMainWindow):
             20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum
         )
         #
-        self.start_progress_label = QLabel(self.central_widget)
+        self.start_progress_label = QLabel(self.centralwidget)
         self.start_progress_label.setText("")
         self.start_progress_label.setVisible(False)
         #
-        self.start_progress = QProgressBar(self.central_widget)
         self.start_progress.setProperty("value", 24)
         self.start_progress.setVisible(False)
         #
-        self.start_button = QPushButton(self.central_widget)
         self.start_button.setFont(self.sub_font)
         self.start_button.setText("Play")
         self.start_button.clicked.connect(self.launch_game)
-        self.current_tab_index = self.tab_widget.currentIndex()
 
         #
         def on_tab_changed() -> None:
@@ -486,29 +404,12 @@ class MainWindow(QMainWindow):
         #
         self.tab_widget.currentChanged.connect(on_tab_changed)
         #
-        self.vertical_layout = QVBoxLayout(self.central_widget)
-        self.vertical_layout.setContentsMargins(15, 15, 15, 15)
-        self.vertical_layout.addWidget(self.logo, 0, Qt.AlignmentFlag.AlignHCenter)
-        self.vertical_layout.addItem(self.title_spacer)
-        self.vertical_layout.addWidget(self.username)
-        self.vertical_layout.addItem(self.progress_spacer)
-        self.vertical_layout.addWidget(self.start_progress_label)
-        self.vertical_layout.addWidget(self.start_progress)
-        self.vertical_layout.addWidget(self.start_button)
-        self.vertical_layout.addItem(self.play_spacer)
-        self.vertical_layout.addWidget(self.tab_widget)
 
         self.launch_thread = LaunchThread()
         self.launch_thread.state_update_signal.connect(self.state_update)
         self.launch_thread.progress_update_signal.connect(self.update_progress)
 
-        self.setCentralWidget(self.central_widget)
-
         self.apply_loaded_style()
-
-    def open_folder(self, event=None):
-        path = self.manager.get_minecraft_dir()
-        QDesktopServices.openUrl(QUrl.fromLocalFile(path))
 
     def filter_items(self) -> None:
         """
@@ -525,21 +426,6 @@ class MainWindow(QMainWindow):
             self.start_button.setDisabled(True)
         else:
             self.start_button.setDisabled(False)
-
-    def closeEvent(self, event):
-        reply = QMessageBox.question(
-            self,
-            "Выход",
-            "Вы уверены, что хотите выйти?",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-            QMessageBox.StandardButton.No,
-        )
-
-        if reply == QMessageBox.StandardButton.Yes:
-            event.accept()  # Разрешаем закрытие
-            self.manager.mod_rollback()
-        else:
-            event.ignore()  # Блокируем закрытие
 
     def state_update(self, value) -> None:
         self.start_button.setDisabled(value)
@@ -564,6 +450,7 @@ class MainWindow(QMainWindow):
         self.manager.save(current_style=style_name)
 
     def apply_loaded_style(self):
+        print("Style updated !")
         style_name = self.manager.load("current_style") or "dark"
         #
         try:
@@ -576,6 +463,7 @@ class MainWindow(QMainWindow):
                 self.sub_font_family,
             )
             self.setStyleSheet(style[0])
+            #print(self.styleSheet())
             self.tab_widget.setStyleSheet(style[1])
             #
             self.theme_combobox.setCurrentText(style_name.capitalize())
@@ -631,9 +519,7 @@ class MainWindow(QMainWindow):
 
 
 if __name__ == "__main__":
-    start_time = perf_counter()
     app = QApplication(argv)
     window = MainWindow()
     window.show()
-    LaunchThread.manager.log([f"App loaded in {perf_counter() - start_time}/sec"])
     exit_(app.exec())

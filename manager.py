@@ -3,19 +3,13 @@
 # See LICENSE file for details.
 
 import sys
-from os import path, mkdir
+from os import path, mkdir, rename
 from datetime import datetime
 from msgspec import json, Struct, DecodeError
 from typing import List
 from minecraft_launcher_lib.utils import get_minecraft_directory
 import resources
 from PyQt6.QtCore import QFile, QIODevice
-
-
-def resource_path(relative_path):
-    if hasattr(sys, "_MEIPASS"):
-        return path.join(sys._MEIPASS, relative_path)
-    return path.join(path.abspath("."), relative_path)
 
 
 class SaveStruct(Struct):
@@ -41,26 +35,36 @@ class Manager:
         app_path: str = ".pit",
         properties_path: str = "launcher_properties.json",
         assets_path: str = ":/assets/",
+        images_path: str = ":/assets/images/",
+        fonts_path: str = ":/assets/fonts/",
         base_style_name: str = "styles.json",
-        logo_path: str = "logos/logo.png",
-        main_icon_path: str = "logos/icon.png",
+        logo_path: str = "logo.png",
+        main_icon_path: str = "icon.ico",
         main_font_path: str = "main_font.ttf",
         sub_font_path: str = "sub_font.ttf",
+        window_size=(600, 450),
+        main_font_size=12,
+        sub_font_size=20,
     ):
         self.minecraft_directory = directory
         self.launcher_properties_path = path.join(
             self.minecraft_directory, properties_path
         )
+        self.window_size = window_size
+        self.images_path = images_path
+        self.fonts_path = fonts_path
+        self.sub_font_size = sub_font_size
+        self.main_font_size = main_font_size
         self.assets_folder = assets_path
         self.logs_path = path.join(self.minecraft_directory, logs_path)
         self.workspace_path = path.join(self.minecraft_directory, app_path)
         self.base_style_path: str = path.join(self.assets_folder, base_style_name)
         self.styles_path = path.join(self.workspace_path, "styles")
         #
-        self.logo_path = path.join(self.assets_folder, logo_path)
-        self.main_icon_path = path.join(self.assets_folder, main_icon_path)
-        self.main_font_path = path.join(self.assets_folder, main_font_path)
-        self.sub_font_path = path.join(self.assets_folder, sub_font_path)
+        self.logo_path = path.join(self.images_path, logo_path)
+        self.main_icon_path = path.join(self.images_path, main_icon_path)
+        self.main_font_path = path.join(self.fonts_path, main_font_path)
+        self.sub_font_path = path.join(self.fonts_path, sub_font_path)
         #
         self.time_start = datetime.now()
         #
@@ -76,24 +80,24 @@ class Manager:
             with open(self.launcher_properties_path, "x"):
                 ...
         except FileExistsError:
-            print("Json exists")
+            self.log(["Json exists"])
+            # print("Json exists")
 
-    def load(self):
+    def load_styles(self):
         file = QFile(self.base_style_path)
         if not file.open(QIODevice.OpenModeFlag.ReadOnly):
-            print("Ошибка: не удалось открыть файл")
+            self.log(["Error: can't open the file"])
+            # print("Ошибка: не удалось открыть файл")
             return None
 
         data = file.readAll().data().decode("utf-8")
         file.close()
-        return json.decode(data, type=Saver)
+        return json.decode(data, type=Saver).styles
 
-    def load_properties(self, arg):
+    def load(self, arg):
         try:
-            with open(
-                self.launcher_properties_path, "r+", encoding="utf-8"
-            ) as launcher_properties:
-                properties = json.load(launcher_properties)
+            with open(self.launcher_properties_path, "br") as launcher_properties:
+                properties = json.decode(launcher_properties.read())
                 return properties[arg]
         except DecodeError:
             self.log(["Error in loading: " + arg])
@@ -102,23 +106,23 @@ class Manager:
             self.log(["Error in loading: " + arg])
             return None
 
-    def save_properties(self, **kwargs):
+    def save(self, **kwargs):
         properties = self._load_existing_data()
         properties.update(kwargs)
         self._write_data(properties)
 
-    def _load_existing_data(self) -> dict:
-        if not self.launcher_properties_path.exists():
-            return {}
+    def get_minecraft_dir(self):
+        return get_minecraft_directory().replace("minecraft", "pitLauncher")
 
+    def _load_existing_data(self) -> dict:
         try:
-            with self.launcher_properties_path.open("rb") as file:
+            with open(self.launcher_properties_path, "rb") as file:
                 return json.decode(file.read(), type=dict)
         except DecodeError:
             return {}
 
     def _write_data(self, data: dict):
-        with self.launcher_properties_path.open("wb") as file:
+        with open(self.launcher_properties_path, "wb") as file:
             file.write(json.encode(data))
 
     def log(self, logs: list):
@@ -139,9 +143,44 @@ class Manager:
             try:
                 mkdir(path)
             except FileExistsError:
-                print(f"{path.capitalize()} Folder exists")
+                self.log([f"{path.capitalize()} Folder exists"])
+                # print(f"{path.capitalize()} Folder exists")
+
+    def mod(self, version_id, loader):
+        if "vanila" in loader:
+            return
+        self.version = version_id
+        self.loader = loader
+        try:
+            mkdir(path.join(self.minecraft_directory, f"{loader}_mods_{version_id}"))
+        except FileExistsError:
+            print("Exists")
+            self.log([f"Found mods folder named '{loader}_mods_{version_id}'"])
+        rename(
+            path.join(
+                self.minecraft_directory,
+                f"{loader}_mods_{version_id}",
+            ),
+            path.join(self.minecraft_directory, "mods"),
+        )
+
+    def mod_rollback(self):
+        try:
+            rename(
+                path.join(
+                    self.minecraft_directory,
+                    "mods",
+                ),
+                path.join(
+                    self.minecraft_directory, f"{self.loader}_mods_{self.version}"
+                ),
+            )
+        except AttributeError:
+            self.log(["Moded folder not found !"])
+        except FileNotFoundError:
+            self.log(["Moded folder already saved !"])
 
 
 if __name__ == "__main__":
     manager1 = Manager()
-    print([style.name for style in manager1.load().styles])
+    print(manager1.sub_font_path, manager1.main_font_path)

@@ -43,7 +43,6 @@ from uuid import uuid1
 from minecraft_launcher_lib.types import MinecraftOptions
 from subprocess import call
 from design import apply_style
-
 from manager import Manager
 
 

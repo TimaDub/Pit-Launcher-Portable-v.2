@@ -4,7 +4,7 @@
                 "name": "blue",
                 "background_color" : "rgb(10, 10, 10)",
                 "text_color": "rgb(52, 0, 222)",
-                "button_color": "rgb(131, 30, 232)",
+                "button_color": "rgb(52, 0, 222)",
                 "progress_bar_color": "qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #3400de, stop:1 #831ee8)",
                 "progress_bar_text_color": "rgb(255, 255, 255)",
                 "selected_tab_color": "rgb(52, 0, 222)",

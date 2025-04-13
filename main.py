@@ -13,7 +13,7 @@ from PyQt6.QtWidgets import (
     QComboBox,
     QProgressBar,
     QPushButton,
-    QApplication,
+   QApplication,
     QSpacerItem,
     QSizePolicy,
     QMessageBox,

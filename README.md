@@ -32,28 +32,8 @@ For mod loaders, make sure to have **Java 17 or higher** installed on your syste
 ### Style File format ?
 
 - To add a new style file, create a **.json** file and name it, use only small letters !
-- Down below you can see an example of file !
-
-```markdown
-// all colors can be rgb(r, g, b) or hex format
-// also file supports Pyqt5 another color systems
-// example qlineargradient(), and the others !
-{
-"file_name":["rgb(10, 10, 10)", // color of background
-"rgb(52, 0, 222)", // text color
-"rgb(131, 30, 232)", // button color
-"qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #3400de, stop:1 #831ee8)", // progress bar color
-"rgb(255, 255, 255)", // progress bar text color
-"rgb(52, 0, 222)", // selected tab text color
-"rgb(10, 10, 10)" // selected tab background color
-]
-}
+- There are already a lot of styles in the project, so have a look ! 
 ```
-
-- Var file*name must be the same as \_file name* !
-- **blue.json** / **_"blue"_:[ ]**
-- Remove **all comments** before saving !
-
 ---
 
 ## Enjoy your game! 🎮✨

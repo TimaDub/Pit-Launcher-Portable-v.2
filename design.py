@@ -85,9 +85,3 @@ def apply_style(style: SaveStruct, font):
                     """
     return main_style, tab_style
 
-
-if __name__ == "__main__":
-    from manager import Manager
-
-    manager1 = Manager()
-    print(apply_style(manager1.load_styles()[0], "Smallest Pixel-7"))

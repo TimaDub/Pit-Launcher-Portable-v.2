@@ -9,4 +9,4 @@
     <file alias="data/nouns.txt">assets/data/nouns.txt</file>
     <file alias="styles.json">assets/styles.json</file>
   </qresource>
-</RCC>
+</RCC

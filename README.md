@@ -22,14 +22,11 @@ For mod loaders, make sure to have **Java 17 or higher** installed on your syste
 ### Want to modify ?
 
 - If you want to customize the asset files, do it !
-- Compiling the app with **Pyinstaller** using **PitLauncher.spec** the asset folder will be packed in .exe file !
-  But if you want to add some styles to it after compiling,
-  there is another folder you can put style files :
-  **User/AppData/Roaming/.pit/styles/**
+- There is 
 
 ### Style File format ?
 
-- To add a new style file, create a **.json** file and name it, use only small letters !
+- To add a new style edit *assets/styles.json* !
 - There are already a lot of styles in the project, so have a look ! 
 
 ---

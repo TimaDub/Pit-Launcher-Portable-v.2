@@ -2,7 +2,6 @@
 # Licensed under the MIT License.
 # See LICENSE file for details.
 
-import sys
 from os import path, mkdir, rename
 from datetime import datetime
 from msgspec import json, Struct, DecodeError
@@ -139,12 +138,11 @@ class Manager:
                 log.write(str(log_) + "\n" + "-" * 20 + "\n")
 
     def check(self, paths: List[str]):
-        for path in paths:
+        for _path in paths:
             try:
-                mkdir(path)
+                mkdir(_path)
             except FileExistsError:
-                self.log([f"{path.capitalize()} Folder exists"])
-                # print(f"{path.capitalize()} Folder exists")
+                self.log([f"{_path.capitalize()} Folder exists"])
 
     def mod(self, version_id, loader):
         if "vanila" in loader:
@@ -180,7 +178,3 @@ class Manager:
         except FileNotFoundError:
             self.log(["Moded folder already saved !"])
 
-
-if __name__ == "__main__":
-    manager1 = Manager()
-    print(manager1.sub_font_path, manager1.main_font_path)

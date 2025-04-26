@@ -64,7 +64,8 @@ def install_quilt(minecraft_version: str, minecraft_directory: Union[str, os.Pat
 
         # Run the installer
         callback.get("setStatus", empty)("Running quilt installer")
-        command = ["java" if java is None else str(java), "-jar", installer_path, "install", "client", minecraft_version, loader_version, f"--install-dir={path}", "--no-profile"]
+        command = ["java" if java is None else str(java), "-jar", installer_path, "install", "client", \
+            minecraft_version, loader_version, f"--install-dir={path}", "--no-profile"]
         result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if result.returncode != 0:
             raise ExternalProgramError(command, result.stdout, result.stderr)

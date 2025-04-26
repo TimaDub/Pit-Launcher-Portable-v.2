@@ -1,7 +1,6 @@
 # "Pit Launcher Portable-v.2" by Tymofii Dubovyi (Pit Corporation)
 
 ```commandline
-pip install -r requirements.txt
 python main.py
 ```
 

@@ -1,5 +1,3 @@
-![Pit Launcher](v.1.7/assets/images/logos/logo.png)
-
 # "Pit Launcher Portable-v.2" by Tymofii Dubovyi (Pit Corporation)
 
 ```commandline

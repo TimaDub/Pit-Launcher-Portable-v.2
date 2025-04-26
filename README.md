@@ -33,7 +33,7 @@ For mod loaders, make sure to have **Java 17 or higher** installed on your syste
 
 - To add a new style file, create a **.json** file and name it, use only small letters !
 - There are already a lot of styles in the project, so have a look ! 
-```
+
 ---
 
 ## Enjoy your game! 🎮✨

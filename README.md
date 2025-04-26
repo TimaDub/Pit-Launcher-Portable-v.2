@@ -2,7 +2,6 @@
 
 ```commandline
 pip install -r requirements.txt
-cd v.1.7
 python main.py
 ```
 

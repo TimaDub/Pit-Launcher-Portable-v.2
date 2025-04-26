@@ -22,7 +22,7 @@ For mod loaders, make sure to have **Java 17 or higher** installed on your syste
 ### Want to modify ?
 
 - If you want to customize the asset files, do it !
-- There is 
+- There is a simple style loading system
 
 ### Style File format ?
 
